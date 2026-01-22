@@ -36,8 +36,8 @@ var menudata={children:[
 {text:"Globals",url:"globals.html",children:[
 {text:"All",url:"globals.html",children:[
 {text:"b",url:"globals.html#index_b"},
-{text:"h",url:"globals.html#index_h"},
-{text:"m",url:"globals.html#index_m"}]},
+{text:"h",url:"globals_h.html#index_h"},
+{text:"m",url:"globals_m.html#index_m"}]},
 {text:"Functions",url:"globals_func.html",children:[
 {text:"b",url:"globals_func.html#index_b"},
 {text:"h",url:"globals_func.html#index_h"},
