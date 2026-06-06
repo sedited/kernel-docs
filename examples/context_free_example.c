@@ -39,18 +39,23 @@ int main() {
 
     btck_ScriptVerifyStatus status = btck_ScriptVerifyStatus_OK;
 
+    btck_PrecomputedTransactionData* txdata = btck_precomputed_transaction_data_create(
+        /*tx_to=*/ transaction,
+        /*spent_outputs=*/ &output_,
+        /*spent_outputs_len=*/ 1);
+
     int result = btck_script_pubkey_verify(
             /*script_pubkey=*/ script_pubkey,
             /*amount=*/ amount,
             /*tx_to=*/ transaction,
-            /*spent_outputs=*/ &output_,
-            /*spent_outputs_len=*/1,
+            /*precomputed_txdata=*/ txdata,
             /*input_index=*/ 0,
             /*flags=*/ btck_ScriptVerificationFlags_ALL,
             /*status*/ &status);
 
     btck_transaction_output_destroy(output);
     btck_script_pubkey_destroy(script_pubkey);
+    btck_precomputed_transaction_data_destroy(txdata);
     btck_transaction_destroy(transaction);
 
     return !(result && status == btck_ScriptVerifyStatus_OK);
