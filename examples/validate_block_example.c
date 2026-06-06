@@ -42,9 +42,9 @@ int main() {
     const char data_dir[] = ".bitcoin";
     const char blocks_dir[] = ".bitcoin/blocks";
     btck_ChainstateManagerOptions* chainman_options = btck_chainstate_manager_options_create(context, data_dir, sizeof(data_dir) - 1, blocks_dir, sizeof(blocks_dir) - 1);
-    if (chainman_options == NULL) return 1;
+    if (chainman_options == NULL) return 2;
     btck_ChainstateManager* chainman = btck_chainstate_manager_create(chainman_options);
-    if (chainman == NULL) return 1;
+    if (chainman == NULL) return 3;
     btck_chainstate_manager_options_destroy(chainman_options);
 
     static const unsigned char block_data[] = {
@@ -66,8 +66,16 @@ int main() {
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     };
 
+    // Running header verification is not required, but added for completeness
+    btck_BlockHeader* block_header = btck_block_header_create(block_data, 80);
+    btck_BlockValidationState* validation_state = btck_chainstate_manager_process_block_header(chainman, block_header);
+    int32_t mode = btck_block_validation_state_get_validation_mode(validation_state);
+    if (mode != btck_ValidationMode_VALID) return 4;
+    btck_block_validation_state_destroy(validation_state);
+    btck_block_header_destroy(block_header);
+
     btck_Block* block = btck_block_create(block_data, sizeof(block_data));
-    if (block == NULL) return 1;
+    if (block == NULL) return 4;
 
     int new_block = 1;
     int res = btck_chainstate_manager_process_block(chainman, block, &new_block);
@@ -75,5 +83,6 @@ int main() {
     btck_block_destroy(block);
     btck_chainstate_manager_destroy(chainman);
     btck_context_destroy(context);
-    return !(res && new_block);
+    if (!(res == 0 && new_block)) return 5;
+    return 0;
 }
